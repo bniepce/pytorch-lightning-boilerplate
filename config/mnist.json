@@ -1,5 +1,6 @@
 {
     "name": "Mnist_experiment",
+    "accelerator": "gpu",
     "n_gpu": 1,
     "model": {
         "type": "MNISTModel",
@@ -15,7 +16,7 @@
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 1,
         "save_dir": "saved_experiments/",
         "save_period": 1,
         "verbosity": 2,

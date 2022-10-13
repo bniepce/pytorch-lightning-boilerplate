@@ -15,7 +15,10 @@ if __name__ == '__main__':
 
     datamodule = config.init_obj('dataloader', dataloader_module)
     model = config.init_obj('model', model_module)
+    epochs = config.__getitem__('trainer')['epochs']
+    accelerator = config.__getitem__('accelerator')
 
     tb_logger = pl_loggers.TensorBoardLogger(save_dir="logs/")
-    trainer = pl.Trainer(accelerator="gpu", max_epochs=1, logger=tb_logger)
+    trainer = pl.Trainer(accelerator=accelerator, max_epochs=epochs, logger=tb_logger)
     trainer.fit(model, datamodule)
+    trainer.test(datamodule=datamodule, ckpt_path='best')

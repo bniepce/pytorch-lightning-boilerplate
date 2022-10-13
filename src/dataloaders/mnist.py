@@ -25,9 +25,14 @@ class MNISTDataModule(pl.LightningDataModule):
     
     def setup(self, stage: Optional[str] = None):
         extra = dict(transform=self.default_transforms) if self.default_transforms else {}
-        dataset = MNIST(self.data_dir, train=True, download=False, **extra)
-        train_length = len(dataset)
-        self.X_train, self.X_val = random_split(dataset, [train_length - self.val_split, self.val_split])
+    
+        if stage == "fit" or stage is None:
+            dataset = MNIST(self.data_dir, train=True, download=False, **extra)
+            train_length = len(dataset)
+            self.X_train, self.X_val = random_split(dataset, [train_length - self.val_split, self.val_split])
+
+        if stage == "test" or stage is None:
+            self.X_test = MNIST(self.data_dir, train=False, **extra)
     
     def train_dataloader(self) -> DataLoader:
         return DataLoader(self.X_train, batch_size = self.batch_size, num_workers=self.num_workers)

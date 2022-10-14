@@ -4,8 +4,12 @@ from src.utils.config import ConfigParser
 import src.dataloaders as dataloader_module
 import src.models as model_module
 from pytorch_lightning import loggers as pl_loggers
+import warnings, cv2, torch
+import numpy as np
+from glob import glob
 
 if __name__ == '__main__':
+    warnings.filterwarnings("ignore")
 
     pl.seed_everything(1234)
 
@@ -15,10 +19,14 @@ if __name__ == '__main__':
 
     datamodule = config.init_obj('dataloader', dataloader_module)
     model = config.init_obj('model', model_module)
-    epochs = config.__getitem__('trainer')['epochs']
-    accelerator = config.__getitem__('accelerator')
+    epochs = config['trainer']['epochs']
+    accelerator = config['accelerator']
 
-    tb_logger = pl_loggers.TensorBoardLogger(save_dir="logs/")
-    trainer = pl.Trainer(accelerator=accelerator, max_epochs=epochs, logger=tb_logger)
+    tb_logger = pl_loggers.TensorBoardLogger(save_dir="logs/", log_graph=True)
+    trainer = pl.Trainer(accelerator=accelerator, max_epochs=epochs, logger=tb_logger, log_every_n_steps=10)
+    print('\n')
     trainer.fit(model, datamodule)
-    trainer.test(datamodule=datamodule, ckpt_path='best')
+    # trainer.test(datamodule=datamodule, ckpt_path='best')
+    print('\n')
+    print('Training terminated.')
+    print('\n')

@@ -1,0 +1,32 @@
+{
+    "name": "Microcontroler_experiment",
+    "accelerator": "gpu",
+    "n_gpu": 1,
+    "model": {
+        "type": "FasterRCNN",
+        "args":{
+            "num_classes": 5,
+            "learning_rate": 1e-3
+        }
+    },
+    "dataloader": {
+        "type": "ImageDetectionDataModule",
+        "args":{
+            "batch_size": 4,
+            "num_workers": 8,
+            "data_dir": "./data/microcontroller",
+            "normalize": false,
+            "classes":  ["background", "Arduino_Nano", "ESP8266", "Raspberry_Pi_3", "Heltec_ESP32_Lora"],
+            "resize": 512
+        }
+    },
+    "trainer": {
+        "epochs": 1,
+        "save_dir": "saved_experiments/",
+        "save_period": 1,
+        "verbosity": 2,
+        "monitor": "min val_loss",
+        "early_stop": 10,
+        "tensorboard": true
+    }
+}

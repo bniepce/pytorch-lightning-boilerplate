@@ -7,6 +7,7 @@ class MNISTModel(pl.LightningModule):
     def __init__(self, hidden_dim=128, learning_rate=1e-3):
         super().__init__()
         self.save_hyperparameters()
+        self.example_input_array = torch.rand(1, 1, 28, 28)
         self.l1 = torch.nn.Linear(28 * 28, self.hparams.hidden_dim)
         self.l2 = torch.nn.Linear(self.hparams.hidden_dim, 10)
 
@@ -20,6 +21,7 @@ class MNISTModel(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
+        self.log('train_loss', loss)
         return loss
 
     def validation_step(self, batch, batch_idx):

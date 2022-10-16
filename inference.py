@@ -4,7 +4,7 @@ from src.utils.config import ConfigParser
 import src.dataloaders as dataloader_module
 import src.models as model_module
 from pytorch_lightning import loggers as pl_loggers
-import warnings, cv2, torch
+import warnings, cv2, torch, os
 import numpy as np
 from glob import glob
 
@@ -16,15 +16,21 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--config', default = './config/mnist.json', type = str)
     parser.add_argument('--model_checkpoint', required=True, type = str)
-    parser.add_argument('--data_dir', required=True, type = str)
+    parser.add_argument('--data_dir', required=False, type = str)
+    parser.add_argument('--output_dir', required=False, default='./outputs')
     config = ConfigParser.from_args(parser)
     
     args = parser.parse_args()
+
+    os.makedirs(args.output_dir, exist_ok=True)
     model = config.init_obj('model', model_module)
     model = model.load_from_checkpoint(args.model_checkpoint)
-    model.eval()
+    model.to('cuda')
+    model.eval() 
 
-    test_images = glob("{}/*jpg".format(args.data_dir))
+    data_directory = args.data_dir if args.data_dir else os.path.join(config['dataloader']['args']['data_dir'], 'test')
+    print(f"Fetching data from : {data_directory}")
+    test_images = glob("{}/*jpg".format(data_directory))
     print(f"Test instances: {len(test_images)}")
     
     CLASSES = config['dataloader']['args']['classes']
@@ -70,8 +76,8 @@ if __name__ == '__main__':
                             (int(box[0]), int(box[1]-5)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 
                             2, lineType=cv2.LINE_AA)
-            cv2.imwrite(f"./test_predictions/{image_name}.jpg", orig_image,)
+            cv2.imwrite(f"./{args.output_dir}/{image_name}.jpg", orig_image,)
         print(f"Image {i+1} done...")
         print('-'*50)
-    print('TEST PREDICTIONS COMPLETE')
+    print('Inference terminated.')
     cv2.destroyAllWindows()

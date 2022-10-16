@@ -21,7 +21,7 @@
         }
     },
     "trainer": {
-        "epochs": 1,
+        "epochs": 50,
         "save_dir": "saved_experiments/",
         "save_period": 1,
         "verbosity": 2,

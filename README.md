@@ -21,7 +21,17 @@ cd pytorch-lightning-boilerplate
 pip install -e .   
 pip install -r requirements.txt
 
-python train.py    
+# Run training
+python train.py --config ./config/model.json
+
+# Run inference
+python inference.py --config ./config/model.json --model_checkpoint ./logs/logs_ligthning/checkpoint/version__0/model.ckpt
+```
+
+A **--data_dir** flag can be used for inference if your test data is not in 
+
+```python
+os.path.join(config['dataloader']['args']['data_dir'], 'test')
 ```
 
 ## Use custom models
